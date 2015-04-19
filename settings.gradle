@@ -1,0 +1,4 @@
+rootProject.name = 'java-news-feed'
+
+include 'consumer', 'producer', 'domain'
+
