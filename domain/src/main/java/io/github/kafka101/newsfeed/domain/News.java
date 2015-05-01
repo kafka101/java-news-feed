@@ -1,11 +1,17 @@
 package io.github.kafka101.newsfeed.domain;
 
-public class News {
-    public final String headline;
-    public final String story;
+import java.util.UUID;
 
-    public News(String headline, String story) {
-        this.headline = headline;
-        this.story = story;
+public class News {
+    public final UUID id;
+    public final String author;
+    public final String title;
+    public final String body;
+
+    public News(UUID id, String author, String title, String body) {
+        this.id = id;
+        this.author = author;
+        this.title = title;
+        this.body = body;
     }
 }
