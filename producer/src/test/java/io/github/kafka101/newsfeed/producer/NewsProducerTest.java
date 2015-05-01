@@ -9,6 +9,6 @@ public class NewsProducerTest {
     public void testSendSync() throws Exception {
         NewsProducer newsProducer = new NewsProducer();
         News news = new News("Title", "asdf");
-        //newsProducer.sendNews(news);
+        newsProducer.sendNews(news);
     }
 }
