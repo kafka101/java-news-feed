@@ -2,5 +2,7 @@ dependencies {
     testCompile(
             ["net._01001111:jlorem:1.3"]
     )
+
     compile project(':domain')
+    compile("org.apache.kafka:kafka-clients:$kafkaVersion")
 }

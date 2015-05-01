@@ -1,0 +1,6 @@
+dependencies {
+    compile project(':domain')
+    compile("org.apache.kafka:kafka_2.10:$kafkaVersion") {
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+}

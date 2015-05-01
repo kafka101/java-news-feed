@@ -6,9 +6,8 @@ ext {
     sourceCompatibility = 1.8
     version = '1.0.0'
     jacksonVersion = '2.5.2'
+    kafkaVersion = '0.8.2.1'
 }
-
-
 
 
 subprojects {
@@ -27,7 +26,6 @@ subprojects {
                 ["org.slf4j:slf4j-simple:1.7.12"]
         )
         compile(
-                ["org.apache.kafka:kafka-clients:0.8.2.1"],
                 ["com.fasterxml.jackson.core:jackson-core:$jacksonVersion"],
                 ["com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"],
                 ["com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"]
