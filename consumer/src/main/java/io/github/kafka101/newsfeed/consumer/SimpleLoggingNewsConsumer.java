@@ -4,7 +4,7 @@ import io.github.kafka101.newsfeed.domain.News;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleLoggingNewsConsumer implements NewsConsumer {
+public final class SimpleLoggingNewsConsumer implements NewsConsumer {
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleLoggingNewsConsumer.class);
     private final String topic;
