@@ -2,7 +2,26 @@ dependencies {
     testCompile(
             ["net._01001111:jlorem:1.3"]
     )
+    testCompile("org.apache.kafka:kafka_2.10:$kafkaVersion:test") {
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+    testCompile("org.apache.kafka:kafka_2.10:$kafkaVersion") {
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
 
     compile project(':domain')
     compile("org.apache.kafka:kafka-clients:$kafkaVersion")
+}
+
+task testJar(type: Jar, dependsOn: testClasses) {
+    baseName = "test-${project.archivesBaseName}"
+    from sourceSets.test.output
+}
+
+configurations {
+    tests
+}
+
+artifacts {
+    tests testJar
 }

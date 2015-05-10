@@ -2,6 +2,7 @@ package io.github.kafka101.newsfeed.producer;
 
 import io.github.kafka101.newsfeed.domain.News;
 import net._01001111.text.LoremIpsum;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -9,18 +10,23 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
-public class NewsProducerTest {
+public class NewsProducerTest extends EmbeddedKafkaTest {
 
     private static final Logger logger = LoggerFactory.getLogger(NewsProducerTest.class);
     private static final LoremIpsum LOREM_IPSUM = new LoremIpsum();
-    private static final String BROKER = "127.0.0.1:9092";
     private static NewsProducer sportProducer;
     private static NewsProducer businessProducer;
 
     @BeforeClass
     public static void createNewsProducer() {
-        sportProducer = new NewsProducer("Sport News", "sport_news", BROKER);
-        businessProducer = new NewsProducer("Business News", "business_news", BROKER);
+        EmbeddedKafkaTest.setUp();
+        sportProducer = new NewsProducer("Sport News", "sport_news", kafkaConnect);
+        businessProducer = new NewsProducer("Business News", "business_news", kafkaConnect);
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        EmbeddedKafkaTest.tearDown();
     }
 
     @Test
