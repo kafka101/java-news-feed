@@ -25,19 +25,21 @@ public class KafkaConsumerThread implements Runnable {
     }
 
     public void run() {
-        logger.info("Running consumer thread #{} for {} on topic {}", threadNumber, consumer.getName(), consumer.getTopic());
+        logger.info("Running consumer thread #{} for {} on topic {}", threadNumber, consumer.getClass().getSimpleName(),
+                consumer.getTopic());
         ConsumerIterator<String, byte[]> it = messageStream.iterator();
         while (it.hasNext()) {
             relayMessage(it.next().message());
         }
-        logger.info("Shutting down consumer thread #{} for {}", threadNumber, consumer.getName());
+        logger.info("Shutting down consumer thread #{} for {}", threadNumber, consumer.getClass().getSimpleName());
     }
 
     private void relayMessage(byte[] message) {
         try {
             consumer.consume(mapper.readValue(message, News.class));
-        } catch (IOException e) {
-            logger.error("Thread #{} for {}: Cannot read messages {}", threadNumber, consumer.getName(), e);
+        } catch (IOException ex) {
+            logger.error("Thread #{} for {}: Cannot read messages {}", threadNumber,
+                    consumer.getClass().getSimpleName(), ex);
         }
     }
 }

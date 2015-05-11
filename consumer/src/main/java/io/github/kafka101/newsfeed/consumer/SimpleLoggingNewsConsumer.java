@@ -8,11 +8,9 @@ public final class SimpleLoggingNewsConsumer implements NewsConsumer {
 
     private static final Logger logger = LoggerFactory.getLogger(SimpleLoggingNewsConsumer.class);
     private final String topic;
-    private final String name;
 
-    public SimpleLoggingNewsConsumer(String topic, String name) {
+    public SimpleLoggingNewsConsumer(String topic) {
         this.topic = topic;
-        this.name = name;
     }
 
     @Override
@@ -25,8 +23,4 @@ public final class SimpleLoggingNewsConsumer implements NewsConsumer {
         return topic;
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
 }

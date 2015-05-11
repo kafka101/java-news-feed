@@ -26,6 +26,8 @@ public class NewsProducerTest extends EmbeddedKafkaTest {
 
     @AfterClass
     public static void tearDown() {
+        sportProducer.close();
+        businessProducer.close();
         EmbeddedKafkaTest.tearDown();
     }
 
