@@ -6,11 +6,11 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -21,7 +21,7 @@ public class NewsProducer {
     private static final Logger logger = LoggerFactory.getLogger(NewsProducer.class);
     private final String producerName;
     private final String topic;
-    private final KafkaProducer<String, News> producer;
+    private final KafkaProducer<UUID, News> producer;
     private final ObjectMapper mapper = new ObjectMapper();
 
     /**
@@ -35,35 +35,22 @@ public class NewsProducer {
         this.producer = createProducer(broker);
     }
 
-    private KafkaProducer<String, News> createProducer(String broker) {
+    private KafkaProducer<UUID, News> createProducer(String broker) {
         Properties config = new Properties();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, broker);
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, UUIDSerializer.class.getName());
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, NewsSerializer.class.getName());
         return new KafkaProducer<>(config);
     }
 
-    public void send(News news) {
-        try {
-            ProducerRecord<String, News> record = new ProducerRecord<>(topic, news.id.toString(), news);
-            this.sendSync(record);
-        } catch (InterruptedException | ExecutionException ex) {
-            logger.error("Uuupsss... something went wrong: {}", ex.getMessage(), ex);
-        }
+    public RecordMetadata send(News news) throws ExecutionException, InterruptedException {
+        ProducerRecord<UUID, News> record = new ProducerRecord<>(topic, news.id, news);
+        return this.producer.send(record).get();
     }
 
-    public void sendAsync(News news) {
-        ProducerRecord<String, News> record = new ProducerRecord<>(topic, news.id.toString(), news);
-        this.sendAsync(record);
-    }
-
-    private Future<RecordMetadata> sendAsync(ProducerRecord<String, News> record) {
+    public Future<RecordMetadata> sendAsync(News news) {
+        ProducerRecord<UUID, News> record = new ProducerRecord<>(topic, news.id, news);
         return this.producer.send(record);
-    }
-
-    private RecordMetadata sendSync(ProducerRecord<String, News> record)
-            throws ExecutionException, InterruptedException {
-        return sendAsync(record).get();
     }
 
     public void close() {

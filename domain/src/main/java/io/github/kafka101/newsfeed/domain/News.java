@@ -12,7 +12,9 @@ public class News {
     public final String body;
 
     @JsonCreator
-    public News(@JsonProperty("id") UUID id, @JsonProperty("author") String author, @JsonProperty("title") String title,
+    public News(@JsonProperty("id") UUID id,
+            @JsonProperty("author") String author,
+            @JsonProperty("title") String title,
             @JsonProperty("body") String body) {
         this.id = id;
         this.author = author;
