@@ -35,6 +35,9 @@ public class KafkaConsumer {
         Properties props = new Properties();
         props.put("zookeeper.connect", zookeeper);
         props.put("group.id", groupId);
+        props.put("offsets.storage", "kafka");
+        props.put("dual.commit.enabled", "false");
+        props.put("zookeeper.session.timeout.ms", "kafka");
         props.put("zookeeper.session.timeout.ms", "400");
         props.put("zookeeper.sync.time.ms", "200");
         props.put("auto.commit.interval.ms", "1000");
