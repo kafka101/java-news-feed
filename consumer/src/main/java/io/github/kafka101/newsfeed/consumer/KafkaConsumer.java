@@ -1,8 +1,10 @@
 package io.github.kafka101.newsfeed.consumer;
 
+import io.github.kafka101.newsfeed.domain.News;
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
+import kafka.serializer.StringDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,9 +73,11 @@ public class KafkaConsumer {
     public void run(int numThreads) {
         Map<String, Integer> topicCountMap = new HashMap();
         topicCountMap.put(topic, new Integer(numThreads));
-        Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumerConnector.createMessageStreams(
-                topicCountMap);
-        List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(topic);
+
+        Map<String, List<KafkaStream<String, News>>> consumerMap = consumerConnector.createMessageStreams(
+                topicCountMap, new StringDecoder(null), new NewsDecoder());
+
+        List<KafkaStream<String, News>> streams = consumerMap.get(topic);
 
         // create fixed size thread pool to launch all the threads
         pool = Executors.newFixedThreadPool(numThreads);
@@ -81,8 +85,9 @@ public class KafkaConsumer {
         // create consumer threads to handle the messages
         int threadNumber = 0;
         for (final KafkaStream stream : streams) {
-            pool.submit(new KafkaConsumerThread(stream, threadNumber, consumer));
-            threadNumber++;
+            String name = String.format("%s[%s]", consumer.getTopic(), threadNumber++);
+            Runnable runnable = new KafkaConsumerThread(stream, name, consumer);
+            pool.submit(runnable);
         }
     }
 }
