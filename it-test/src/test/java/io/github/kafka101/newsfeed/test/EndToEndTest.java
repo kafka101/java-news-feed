@@ -37,7 +37,7 @@ public class EndToEndTest extends EmbeddedKafkaTest {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws InterruptedException {
         EmbeddedKafkaTest.tearDown();
     }
 

@@ -25,7 +25,7 @@ public class NewsProducerTest extends EmbeddedKafkaTest {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws InterruptedException {
         sportProducer.close();
         businessProducer.close();
         EmbeddedKafkaTest.tearDown();
