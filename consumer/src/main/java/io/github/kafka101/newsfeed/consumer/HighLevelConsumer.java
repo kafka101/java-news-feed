@@ -2,8 +2,10 @@ package io.github.kafka101.newsfeed.consumer;
 
 import io.github.kafka101.newsfeed.domain.News;
 import kafka.consumer.ConsumerConfig;
+import kafka.consumer.ConsumerIterator;
 import kafka.consumer.KafkaStream;
 import kafka.javaapi.consumer.ConsumerConnector;
+import kafka.message.MessageAndMetadata;
 import kafka.serializer.StringDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +20,19 @@ import java.util.concurrent.TimeUnit;
 
 import static kafka.consumer.Consumer.createJavaConsumerConnector;
 
-public class KafkaConsumer {
+/**
+ * Consumer group example for legacy consumer API using the High Level Consumer and auto-committing.
+ */
+public class HighLevelConsumer {
 
-    private static final Logger logger = LoggerFactory.getLogger(KafkaConsumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(HighLevelConsumer.class);
 
     private final ConsumerConnector consumerConnector;
     private final String topic;
     private ExecutorService pool;
     private final NewsConsumer consumer;
 
-    public KafkaConsumer(String zookeeper, String groupId, NewsConsumer consumer) {
+    public HighLevelConsumer(String zookeeper, String groupId, NewsConsumer consumer) {
         this.consumerConnector = createJavaConsumerConnector(createConsumerConfig(zookeeper, groupId));
         this.consumer = consumer;
         this.topic = consumer.getTopic();
@@ -45,14 +50,14 @@ public class KafkaConsumer {
         return new ConsumerConfig(props);
     }
 
-    public void shutdown() {
+    public void stop() {
         if (consumerConnector != null) {
             consumerConnector.shutdown();
         }
         try {
             shutdownExecutor();
         } catch (InterruptedException e) {
-            logger.error("Interrupted during shutdown, exiting uncleanly {}", e);
+            logger.error("Interrupted during stop, exiting uncleanly {}", e);
         }
     }
 
@@ -70,7 +75,7 @@ public class KafkaConsumer {
         }
     }
 
-    public void run(int numThreads) {
+    public void start(int numThreads) {
         Map<String, Integer> topicCountMap = new HashMap();
         topicCountMap.put(topic, new Integer(numThreads));
 
@@ -86,8 +91,23 @@ public class KafkaConsumer {
         int threadNumber = 0;
         for (final KafkaStream stream : streams) {
             String name = String.format("%s[%s]", consumer.getTopic(), threadNumber++);
-            Runnable runnable = new KafkaConsumerThread(stream, name, consumer);
-            pool.submit(runnable);
+            pool.submit(() -> processMessageStream(stream, name));
         }
+    }
+
+    private void processMessageStream(KafkaStream messageStream, String name) {
+        Thread.currentThread().setName(name);
+        logger.info("Started consumer thread {}", name);
+        ConsumerIterator<String, News> it = messageStream.iterator();
+        while (it.hasNext()) {
+            relayMessage(it.next());
+        }
+        logger.info("Shutting down consumer thread {}", name);
+    }
+
+    private void relayMessage(MessageAndMetadata<String, News> kafkaMessage) {
+        logger.trace("Received message with key '{}' and offset '{}' on partition '{}' for topic '{}'",
+                kafkaMessage.key(), kafkaMessage.offset(), kafkaMessage.partition(), kafkaMessage.topic());
+        consumer.consume(kafkaMessage.message());
     }
 }

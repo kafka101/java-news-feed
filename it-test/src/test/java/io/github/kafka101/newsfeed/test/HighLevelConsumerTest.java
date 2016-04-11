@@ -1,6 +1,6 @@
 package io.github.kafka101.newsfeed.test;
 
-import io.github.kafka101.newsfeed.consumer.KafkaConsumer;
+import io.github.kafka101.newsfeed.consumer.HighLevelConsumer;
 import io.github.kafka101.newsfeed.consumer.NewsConsumer;
 import io.github.kafka101.newsfeed.domain.News;
 import io.github.kafka101.newsfeed.producer.EmbeddedKafkaTest;
@@ -23,9 +23,9 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class EndToEndTest extends EmbeddedKafkaTest {
+public class HighLevelConsumerTest extends EmbeddedKafkaTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(EndToEndTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(HighLevelConsumerTest.class);
     private static final LoremIpsum LOREM_IPSUM = new LoremIpsum();
     private static final int THREADS = 1;
     private static final String TOPIC = "finance_news";
@@ -47,8 +47,8 @@ public class EndToEndTest extends EmbeddedKafkaTest {
         createTopic(TOPIC);
 
         TestConsumer newsConsumer = new TestConsumer();
-        KafkaConsumer kafkaConsumer = new KafkaConsumer(zkConnect, "test-group", newsConsumer);
-        kafkaConsumer.run(THREADS);
+        HighLevelConsumer highLevelConsumer = new HighLevelConsumer(zkConnect, "test-group", newsConsumer);
+        highLevelConsumer.start(THREADS);
 
         NewsProducer newsProducer = new NewsProducer("Financial News", TOPIC, kafkaConnect);
         logger.info("Sending {} messages", NUMBER_OF_MESSAGES);
@@ -64,7 +64,7 @@ public class EndToEndTest extends EmbeddedKafkaTest {
         assertThat(newsConsumer.getNews().get(0).author, is(equalTo("Prof. Kohle")));
 
         newsProducer.close();
-        kafkaConsumer.shutdown();
+        highLevelConsumer.stop();
     }
 
     public class TestConsumer implements NewsConsumer {
