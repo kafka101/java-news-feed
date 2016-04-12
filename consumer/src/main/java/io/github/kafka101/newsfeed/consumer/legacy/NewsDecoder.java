@@ -1,6 +1,7 @@
-package io.github.kafka101.newsfeed.consumer;
+package io.github.kafka101.newsfeed.consumer.legacy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.kafka101.newsfeed.consumer.legacy.DecoderException;
 import io.github.kafka101.newsfeed.domain.News;
 import kafka.serializer.Decoder;
 

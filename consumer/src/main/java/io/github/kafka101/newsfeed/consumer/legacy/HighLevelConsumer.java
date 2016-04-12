@@ -1,5 +1,6 @@
-package io.github.kafka101.newsfeed.consumer;
+package io.github.kafka101.newsfeed.consumer.legacy;
 
+import io.github.kafka101.newsfeed.consumer.NewsConsumer;
 import io.github.kafka101.newsfeed.domain.News;
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.ConsumerIterator;

@@ -2,6 +2,7 @@ package io.github.kafka101.newsfeed.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.kafka101.newsfeed.domain.News;
+import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.serialization.Deserializer;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class NewsDeserializer implements Deserializer<News> {
         try {
             return mapper.readValue(data, News.class);
         } catch (IOException e) {
-            throw new DecoderException("Cannot read message.", e);
+            throw new KafkaException("Cannot read message.", e);
         }
     }
 

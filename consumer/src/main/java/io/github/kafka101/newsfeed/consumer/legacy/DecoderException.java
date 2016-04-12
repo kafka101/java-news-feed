@@ -1,10 +1,10 @@
-package io.github.kafka101.newsfeed.consumer;
+package io.github.kafka101.newsfeed.consumer.legacy;
 
 import org.apache.kafka.common.KafkaException;
 
 /**
  *  Any exception during deserialization in the NewsDecoder
- *  @see io.github.kafka101.newsfeed.consumer.NewsDecoder
+ *  @see NewsDecoder
  */
 public class DecoderException extends KafkaException {
 

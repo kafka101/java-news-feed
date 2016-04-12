@@ -1,10 +1,10 @@
-package io.github.kafka101.newsfeed.test;
+package io.github.kafka101.newsfeed.test.legacy;
 
-import io.github.kafka101.newsfeed.consumer.HighLevelConsumer;
-import io.github.kafka101.newsfeed.consumer.NewsConsumer;
+import io.github.kafka101.newsfeed.consumer.legacy.HighLevelConsumer;
 import io.github.kafka101.newsfeed.domain.News;
 import io.github.kafka101.newsfeed.producer.EmbeddedKafkaTest;
 import io.github.kafka101.newsfeed.producer.NewsProducer;
+import io.github.kafka101.newsfeed.test.TestConsumer;
 import net._01001111.text.LoremIpsum;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -12,9 +12,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
