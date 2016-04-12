@@ -1,7 +1,6 @@
 package io.github.kafka101.newsfeed.test;
 
-import io.github.kafka101.newsfeed.consumer.HighLevelConsumer;
-import io.github.kafka101.newsfeed.consumer.NewsConsumer;
+import io.github.kafka101.newsfeed.consumer.SimpleConsumerPool;
 import io.github.kafka101.newsfeed.domain.News;
 import io.github.kafka101.newsfeed.producer.EmbeddedKafkaTest;
 import io.github.kafka101.newsfeed.producer.NewsProducer;
@@ -12,9 +11,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -23,11 +20,10 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class HighLevelConsumerTest extends EmbeddedKafkaTest {
+public class SimpleConsumerTest extends EmbeddedKafkaTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(HighLevelConsumerTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(SimpleConsumerTest.class);
     private static final LoremIpsum LOREM_IPSUM = new LoremIpsum();
-    private static final int THREADS = 1;
     private static final String TOPIC = "finance_news";
     private static final int NUMBER_OF_MESSAGES = 50;
 
@@ -43,14 +39,13 @@ public class HighLevelConsumerTest extends EmbeddedKafkaTest {
 
     @Test
     public void sendAndReceiveTest() throws InterruptedException {
-
         createTopic(TOPIC);
 
         TestConsumer newsConsumer = new TestConsumer(TOPIC);
-        HighLevelConsumer highLevelConsumer = new HighLevelConsumer(zkConnect, "test-group", newsConsumer);
-        highLevelConsumer.start(THREADS);
+        SimpleConsumerPool consumerPool = new SimpleConsumerPool(kafkaConnect);
+        consumerPool.start(Arrays.asList(newsConsumer));
 
-        NewsProducer newsProducer = new NewsProducer("Financial News", TOPIC, kafkaConnect);
+        NewsProducer newsProducer = new NewsProducer("Breaking News", TOPIC, kafkaConnect);
         logger.info("Sending {} messages", NUMBER_OF_MESSAGES);
         long start = System.currentTimeMillis();
         for (int i = 0; i < NUMBER_OF_MESSAGES; i++) {
@@ -64,6 +59,6 @@ public class HighLevelConsumerTest extends EmbeddedKafkaTest {
         assertThat(newsConsumer.getNews().get(0).author, is(equalTo("Prof. Kohle")));
 
         newsProducer.close();
-        highLevelConsumer.stop();
+        consumerPool.stop();
     }
 }
